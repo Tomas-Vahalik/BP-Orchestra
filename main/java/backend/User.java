@@ -6,9 +6,14 @@
 package backend;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -23,8 +28,8 @@ public class User implements Serializable {
 private static final long serialVersionUID = 1L;
     
     @Id
-	@Column(name="email", nullable=false, length=255)
-	private String email;
+	@Column(name="login", nullable=false, length=255)
+	private String login;
 	
 	@Column(name="password", nullable=false, length=64)
 	private String password;
@@ -33,12 +38,12 @@ private static final long serialVersionUID = 1L;
 	private String name;
         
         
-        public String getEmail() {
-        return email;
+        public String getLogin() {
+        return login;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getPassword() {
@@ -55,6 +60,20 @@ private static final long serialVersionUID = 1L;
 
     public void setName(String name) {
         this.name = name;
+    }
+     @ManyToMany()
+    @JoinTable(
+        name = "User_Instrument", 
+        joinColumns = { @JoinColumn(name = "user_id") }, 
+        inverseJoinColumns = { @JoinColumn(name = "instrument_id") }
+    )
+    Set<Instrument> instruments = new HashSet<>();
+     public Set<Instrument> getInstruments() {
+        return instruments;
+    }
+
+    public void setInstruments(Set<Instrument> instruments) {
+        this.instruments = instruments;
     }
 
     
@@ -94,5 +113,7 @@ private static final long serialVersionUID = 1L;
     public String toString() {
         return "eu.cz.fit.vahalto1.orchestrasheetapplication.User[ id=" + id + " ]";
     }*/
+
+    
     
 }

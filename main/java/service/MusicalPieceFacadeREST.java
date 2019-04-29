@@ -5,6 +5,7 @@
  */
 package service;
 
+import backend.Event;
 import backend.Instrument;
 import backend.MusicalPiece;
 import backend.MusicalPieces;
@@ -40,6 +41,8 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
 
     @EJB
     private SheetFacadeREST sfr;
+    @EJB
+    private EventFacadeREST efr;
     public MusicalPieceFacadeREST() {
         super(MusicalPiece.class);
     }
@@ -61,6 +64,25 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
+        MusicalPiece piece = find(id);
+        //edit events
+        List<Event> allEvents = efr.findAll();
+        List<Event> eventsToUpdate = new ArrayList();
+        for(Event e : allEvents){
+            if(e.getPieces().contains(piece))
+                eventsToUpdate.add(e);
+        }
+        for(Event e : eventsToUpdate){
+            e.getPieces().remove(piece);
+            efr.edit(e);
+        }
+        //edit sheets
+        List<Sheet> sheetsToUpdate = sfr.findByPiece(id).getSheets();
+        for(Sheet s : sheetsToUpdate){
+            s.setPiece(null);
+            sfr.edit(s);
+        }
+        //remove piece
         super.remove(super.find(id));
     }
 
@@ -103,7 +125,7 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
        if(!result.isEmpty()) return result.get(0);
        else return null;
     }
-    @GET
+    /*@GET
     @Path("/sheets/{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Sheets getSheets(@PathParam("id") Long id) {
@@ -121,7 +143,7 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
         System.out.println("resSize: "+res.size());  
       resultSheets.setSheets(res);
       return resultSheets;
-    }
+    }*/
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)

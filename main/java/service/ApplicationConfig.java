@@ -34,6 +34,7 @@ public class ApplicationConfig extends Application {
         resources.add(service.InstrumentFacadeREST.class);
         resources.add(service.MusicalPieceFacadeREST.class);
         resources.add(service.SheetFacadeREST.class);
+        resources.add(service.UnverifiedUserFacadeREST.class);
         resources.add(service.UserFacadeREST.class);
     }
     

@@ -26,18 +26,16 @@ public class MusicalPieceClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/OrchestraApplication/webresources";
+    private static String BASE_URI;// = "http://localhost:8080/OrchestraApplication/webresources";
+    //private static final String BASE_URI = "http://185.88.73.72:8080/Orchestra";
 
-    public MusicalPieceClient() {
+    public MusicalPieceClient(String baseURI) {
+        BASE_URI = baseURI;
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("eu.cz.fit.vahalto1.orchestraapplication.musicalpiece");
+        webTarget = client.target(BASE_URI).path("webresources/eu.cz.fit.vahalto1.orchestraapplication.musicalpiece");
     }
 
-    public MusicalPieceClient(String username, String password) {
-        this();
-        setUsernamePassword(username, password);
-    }
-
+    
     public String countREST() throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("count");

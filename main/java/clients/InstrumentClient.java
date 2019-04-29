@@ -26,14 +26,15 @@ public class InstrumentClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/OrchestraApplication/webresources";
+    private static String BASE_URI;// = "http://localhost:8080/OrchestraApplication/webresources";
+    //private static final String BASE_URI = "http://185.88.73.72:8080/Orchestra";
     private String sessionid;
 
-    public InstrumentClient(String id) {
-        
+    public InstrumentClient(String id, String baseURI) {
+        BASE_URI = baseURI;
         sessionid=id;
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("eu.cz.fit.vahalto1.orchestraapplication.instrument");
+        webTarget = client.target(BASE_URI).path("webresources/eu.cz.fit.vahalto1.orchestraapplication.instrument");
     }
 
     public String countREST() throws ClientErrorException {

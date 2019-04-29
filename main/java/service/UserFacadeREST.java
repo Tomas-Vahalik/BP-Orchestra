@@ -5,12 +5,20 @@
  */
 package service;
 
+import backend.BooleanWrapper;
+import backend.Instrument;
+import backend.Instruments;
 import backend.User;
 import backend.User_Group;
+import backend.Users;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,6 +44,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @PersistenceContext(unitName = "OrchestraAppPersistence")
     private EntityManager em;
 
+    @EJB
+    private InstrumentFacadeREST ifr;
     public UserFacadeREST() {
         super(User.class);
     }
@@ -50,30 +60,33 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @RolesAllowed("admin")
     public void create(User user) {
-       try {
-			user.setPassword(encodeSHA256(user.getPassword()));
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-		}
+   
 		User_Group group = new User_Group();
-		group.setEmail(user.getEmail());
+		group.setLogin(user.getLogin());
 		group.setGroupname(User_Group.USERS_GROUP);
 		em.persist(user);
 		em.persist(group);
     }
-
+    
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @RolesAllowed("admin")
     public void edit(@PathParam("id") String id, User entity) {
         super.edit(entity);
     }
 
     @DELETE
     @Path("{id}")
+    @RolesAllowed("admin")
     public void remove(@PathParam("id") String id) {
+         User_Group g = (User_Group)em.createQuery(
+        "SELECT g FROM User_Group g WHERE g.login = :userId")
+        .setParameter("userId", id).getSingleResult();
+         em.remove(g);
+        
         super.remove(super.find(id));
     }
 
@@ -82,22 +95,52 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("createAdmin")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void createAdmin() {
-        User user = new User();
-        user.setName("admin2");
-        user.setEmail("admin2@email.com");
-        user.setPassword("passwordAdmin2");
+         List<Long> result = em.createQuery(
+        "SELECT COUNT(g) FROM User_Group g WHERE g.groupname = 'admin' GROUP BY g.groupname")        
+        .getResultList();
+         
+         if(result.size() > 0){         
+             System.out.println("Admin alredy exists!!");
+             return;
+         }
+        User user = new backend.User();
+        user.setName("admin");
+        user.setLogin("newAdmin@email.com");
+        user.setPassword("hesloadmin");
         
-          try {
+          /*try {
 			user.setPassword(encodeSHA256(user.getPassword()));
+                        
 		} catch (Exception e) {
 			
 			e.printStackTrace();
-		}
+		}*/
 		User_Group group = new User_Group();
-		group.setEmail(user.getEmail());
+		group.setLogin(user.getLogin());
 		group.setGroupname(User_Group.ADMINS_GROUP);
 		em.persist(user);
 		em.persist(group);
+    }
+    
+    @GET
+    @Path("grantAdmin/{id}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    
+    public void grantAdmin(@PathParam("id") String id) {
+        User user = find(id);        
+        Instruments instruments = ifr.findAllInstruments();
+        Set<Instrument> instr = new HashSet();
+        instr.addAll(instruments.getInstruments());
+        user.setInstruments(instr);
+        
+        User_Group g = (User_Group)em.createQuery(
+        "SELECT g FROM User_Group g WHERE g.login = :userId")
+        .setParameter("userId", id).getSingleResult();        
+	
+		
+		g.setGroupname(User_Group.ADMINS_GROUP);		
+		em.persist(g);
+                em.persist(user);
     }
     
     @GET
@@ -106,8 +149,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public void createUser() {
         User user = new User();
         user.setName("user");
-        user.setEmail("user@email.com");
-        user.setPassword("passwordUser");
+        user.setLogin("novyUser@email.com");
+        user.setPassword("heslouser");
         
           try {
 			user.setPassword(encodeSHA256(user.getPassword()));
@@ -116,7 +159,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
 			e.printStackTrace();
 		}
 		User_Group group = new User_Group();
-		group.setEmail(user.getEmail());
+		group.setLogin(user.getLogin());
 		group.setGroupname(User_Group.USERS_GROUP);
 		em.persist(user);
 		em.persist(group);
@@ -124,17 +167,43 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    
     public User find(@PathParam("id") String id) {
         return super.find(id);
     }
 
-    @GET
+    /*@GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findAll() {
         return super.findAll();
+    }*/
+    
+    @GET    
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @RolesAllowed("admin")
+    public Users findAllUsers() {        
+        Users users = new Users();
+        users.setUsers(super.findAll());
+        System.out.println("bla");
+        return users;
     }
+    
 
+    @GET
+    @Path("/isAdmin/{id}")    
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public BooleanWrapper isAdmin(@PathParam("id") String id) {
+        BooleanWrapper wrapper = new BooleanWrapper();
+         List<String> result = em.createQuery(
+        "SELECT g.groupname FROM User_Group g WHERE g.login = :userId")
+        .setParameter("userId", id)
+        .getResultList();
+        if(result.contains(User_Group.ADMINS_GROUP)) wrapper.setValue(true);
+        else wrapper.setValue(false);
+        
+        return wrapper;
+    }
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})

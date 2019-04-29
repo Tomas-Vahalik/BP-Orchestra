@@ -23,18 +23,18 @@ public class User_Group implements Serializable {
         public static final String ADMINS_GROUP = "admin";
 	
 	@Id
-	@Column(name="email", nullable=false, length=255)
-	private String email;
+	@Column(name="login", nullable=false, length=255)
+	private String login;
 	
 	@Column(name="groupname", nullable=false, length=32)
 	private String groupname;
 	
 	
-	public String getEmail() {
-		return email;
+	public String getLogin() {
+		return login;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setLogin(String login) {
+		this.login = login;
 	}
 	public String getGroupname() {
 		return groupname;

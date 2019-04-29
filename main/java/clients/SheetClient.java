@@ -29,16 +29,18 @@ public class SheetClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/OrchestraApplication/webresources";
+    private static String BASE_URI;// = "http://localhost:8080/OrchestraApplication/webresources";
+    //private static final String BASE_URI = "http://185.88.73.72:8080/Orchestra";
     private String sessionid;
-    public SheetClient(String id) {
+    public SheetClient(String id, String baseURI) {
         /*HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("admin@email.com", "hesloadmin");        
 
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.register(feature) ;*/
+        BASE_URI = baseURI;
         sessionid=id;
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("eu.cz.fit.vahalto1.orchestraapplication.sheet");
+        webTarget = client.target(BASE_URI).path("webresources/eu.cz.fit.vahalto1.orchestraapplication.sheet");
     }
 
     public String countREST() throws ClientErrorException {
@@ -56,6 +58,21 @@ public class SheetClient {
     public <T> T findByName_XML(Class<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("byName/{0}", new Object[]{name}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+     public <T> T findByPiece_XML(Class<T> responseType, Long id) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("byPiece/{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+      public <T> T findByInstrument_XML(Class<T> responseType, Long id) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("byInstrument/{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+      public <T> T findByEvent_XML(Class<T> responseType, Long id) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("byEvent/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
     public void edit_XML(Object requestEntity, String id) throws ClientErrorException {

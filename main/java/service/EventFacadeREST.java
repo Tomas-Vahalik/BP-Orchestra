@@ -82,8 +82,13 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Events findAllEvents() {
+        
         Events events = new Events();
-        events.setEvents(super.findAll());
+        List<Event> result = em.createQuery(
+        "SELECT e FROM Event e ORDER BY e.eventDate")        
+        .getResultList();
+        //events.setEvents(super.findAll());
+        events.setEvents(result);
         return events;
     }
 

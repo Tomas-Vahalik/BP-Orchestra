@@ -6,6 +6,7 @@
 package backend;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -59,11 +60,24 @@ public class Event implements Serializable {
     public Date getEventDate() {
         return eventDate;
     }
+    public String getFormatedDate(){
+        SimpleDateFormat format = new SimpleDateFormat("d.MM.YYYY");
+        return format.format(eventDate);        
+    }
 
     public void setEventDate(Date eventDate) {
         this.eventDate = eventDate;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    private String name;    
     private String description;
     private Date eventDate;
     @ManyToMany()
