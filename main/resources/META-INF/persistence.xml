@@ -2,10 +2,6 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="OrchestraAppPersistence" transaction-type="JTA">
     <jta-data-source>jdbc_orchestra</jta-data-source>
-    <class>backend.Event</class>
-    <class>backend.Instrument</class>
-    <class>backend.MusicalPiece</class>
-    <class>backend.Sheet</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>

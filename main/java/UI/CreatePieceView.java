@@ -141,9 +141,17 @@ private Set<Sheet> sheetSet = new HashSet();
                sc.edit_XML(s, "" + s.getId());
            }
            Notification.show("Piece saved successfully", Notification.Type.HUMANIZED_MESSAGE);
-        });      
+        });     
+      
+      Button newPiece = new Button("Add next piece");
+            newPiece.addClickListener((event) -> {
+                this.piece = null;
+                nameField.setValue("");
+                sheetSet = new HashSet();
+                
+        });
         
-      resultLayout.addComponents(nameLayout,addSheetLayout,sheetGrid,/*removeSelected,*/addButton);
+      resultLayout.addComponents(nameLayout,addSheetLayout,sheetGrid,/*removeSelected,*/addButton, newPiece);
         return resultLayout;
     }
 }

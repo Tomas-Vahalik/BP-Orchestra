@@ -50,8 +50,10 @@ public class SheetClient {
     }
 
     public <T> T getPdf(Class<T> responseType, String id) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}/pdf", new Object[]{id}));
+        WebTarget resource = webTarget;        
+        String toPath = id + "/pdf";
+        resource = resource.path(toPath);  
+        //resource = resource.path(java.text.MessageFormat.format("{0}/pdf", new Object[]{id}));
         Invocation.Builder ib = resource.request("application/pdf");
         return ib.cookie("JSESSIONID", sessionid).get(responseType);
     }
@@ -61,22 +63,30 @@ public class SheetClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
      public <T> T findByPiece_XML(Class<T> responseType, Long id) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("byPiece/{0}", new Object[]{id}));
+        WebTarget resource = webTarget;        
+        //resource = resource.path(java.text.MessageFormat.format("byPiece/{0}", new Object[]{id}));        
+        String toPath = "byPiece/" + id;
+        resource = resource.path(toPath);        
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
       public <T> T findByInstrument_XML(Class<T> responseType, Long id) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("byInstrument/{0}", new Object[]{id}));
+        String toPath = "byInstrument/" + id;
+        resource = resource.path(toPath);  
+        //resource = resource.path(java.text.MessageFormat.format("byInstrument/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
       public <T> T findByEvent_XML(Class<T> responseType, Long id) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("byEvent/{0}", new Object[]{id}));
+        String toPath = "byEvent/" + id;
+        resource = resource.path(toPath);          
+        //resource = resource.path(java.text.MessageFormat.format("byEvent/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
     public void edit_XML(Object requestEntity, String id) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        String toPath = "" + id;        
+        //webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget.path(toPath).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
     public void edit_JSON(Object requestEntity, String id) throws ClientErrorException {
@@ -85,7 +95,9 @@ public class SheetClient {
 
     public <T> T find_XML(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
+        String toPath = "byEvent/" + id;
+        resource = resource.path(toPath);   
+        //resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
@@ -126,7 +138,9 @@ public class SheetClient {
     }
 
     public void remove(String id) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+        String toPath = "" + id;        
+        //webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+        webTarget.path(toPath).request().delete();
     }
 
     public void close() {

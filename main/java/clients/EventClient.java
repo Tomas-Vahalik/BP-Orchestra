@@ -45,8 +45,6 @@ public class EventClient {
 
     public void edit_XML(Object requestEntity, String id) throws ClientErrorException {
         backend.Event e = (backend.Event) requestEntity;
-        System.out.println(e.getDescription());
-        System.out.println(e.getPieces().size());
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 

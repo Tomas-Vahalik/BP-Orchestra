@@ -10,16 +10,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -77,9 +77,12 @@ public class Event implements Serializable {
         this.name = name;
     }
     
-    private String name;    
+    
+    private String name;        
     private String description;
+    
     private Date eventDate;
+    
     @ManyToMany()
     @JoinTable(
         name = "Event_Piece", 
