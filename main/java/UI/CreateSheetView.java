@@ -9,6 +9,7 @@ import backend.Instrument;
 import backend.Instruments;
 import backend.MusicalPiece;
 import backend.MusicalPieces;
+import backend.PdfWrapper;
 import backend.Sheet;
 import clients.InstrumentClient;
 import clients.MusicalPieceClient;
@@ -108,12 +109,13 @@ public class CreateSheetView {
                     sheet = new Sheet();
                     newSheet = true;
                 }
-                //instrument = sc.findByName...
-                //sheet.setInstrument(instrument);
+                
             sheet.setName(nameField.getValue());
             pdfArray = receiver.getStream().toByteArray();
+            PdfWrapper wrapper = new PdfWrapper();
             if(pdfArray.length != 0){
-                sheet.setPdfFile(pdfArray);
+              //  sheet.setPdfFile(pdfArray);
+              wrapper.setPdfFile(pdfArray);
             }            
             
             Instrument i = ic.findByName_XML(Instrument.class, instrumentBox.getValue());
@@ -135,9 +137,13 @@ public class CreateSheetView {
             sheet.setPiece(piece);
             if(newSheet == true){
                 sc.create_XML(sheet);
+                Sheet s = sc.findByName_XML(Sheet.class, sheet.getName());
+                sc.setPdf("" + s.getId(), wrapper);                
             }
             else{
                 sc.edit_XML(sheet, "" + sheet.getId());
+                Sheet s = sc.findByName_XML(Sheet.class, sheet.getName());
+                sc.setPdf("" + s.getId(), wrapper);       
             }
             receiver.reset();
          });        

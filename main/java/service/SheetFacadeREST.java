@@ -8,6 +8,7 @@ package service;
 import backend.Event;
 import backend.Instrument;
 import backend.MusicalPiece;
+import backend.PdfWrapper;
 import backend.Sheet;
 import backend.Sheets;
 import java.io.ByteArrayInputStream;
@@ -110,17 +111,33 @@ public Response getPdf(@PathParam("id") Long id, @Context HttpHeaders hh) throws
     }
         //String nameParam = queryParams.getFirst("user");
          Sheet sheet = find(id);
+        byte [] result = (byte [])em.createQuery(
+        "SELECT s.pdfFile FROM Sheet s WHERE s.id = :id")
+        .setParameter("id", id)
+        .getSingleResult();
         
-       File f = new File("tmpFile.pdf");
+        
+       /*File f = new File("tmpFile.pdf");
        FileOutputStream fos = new FileOutputStream(f);
-       fos.write(sheet.getPdfFile());
+       fos.write(sheet.getPdfFile());*/
+       
    
-    ByteArrayInputStream is = new ByteArrayInputStream(sheet.getPdfFile());    
+    //ByteArrayInputStream is = new ByteArrayInputStream(sheet.getPdfFile());    
+    ByteArrayInputStream is = new ByteArrayInputStream(result);    
     Response.ResponseBuilder responseBuilder = javax.ws.rs.core.Response.ok((Object) is);
     responseBuilder.type("application/pdf");
     responseBuilder.header("Content-Disposition", "filename=test.pdf");
     return responseBuilder.build();
 }
+
+@Path("/setPdf/{id}")
+    @POST
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})    
+    public void setPdf(@PathParam("id") Long id, PdfWrapper wrapper) {
+        Sheet sheet = super.find(id);
+        sheet.setPdfFile(wrapper.getPdfFile());
+        super.edit(sheet);      
+    }
     
 @GET
     @Path("/byName/{name}")

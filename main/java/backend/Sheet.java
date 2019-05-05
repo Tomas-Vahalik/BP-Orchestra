@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -52,6 +53,7 @@ public class Sheet implements Serializable {
     private Instrument instrument;
 
     //@XmlJavaTypeAdapter(BlobXmlAdapter.class)
+    @XmlTransient
     public byte[] getPdfFile() {
         return pdfFile;
     }

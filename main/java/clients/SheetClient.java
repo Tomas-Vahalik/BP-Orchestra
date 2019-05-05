@@ -5,12 +5,11 @@
  */
 package clients;
 
+import backend.PdfWrapper;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 /**
  * Jersey REST client generated for REST resource:SheetFacadeREST
@@ -56,6 +55,13 @@ public class SheetClient {
         //resource = resource.path(java.text.MessageFormat.format("{0}/pdf", new Object[]{id}));
         Invocation.Builder ib = resource.request("application/pdf");
         return ib.cookie("JSESSIONID", sessionid).get(responseType);
+    }
+    public void setPdf(String id, PdfWrapper wrapper){
+        WebTarget resource = webTarget;        
+        String toPath = "/setPdf/" + id;
+        resource = resource.path(toPath);  
+        resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(wrapper, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        
     }
     public <T> T findByName_XML(Class<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
