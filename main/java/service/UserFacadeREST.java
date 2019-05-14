@@ -35,7 +35,7 @@ import javax.xml.bind.DatatypeConverter;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Stateless
 @Path("eu.cz.fit.vahalto1.orchestraapplication.user")
@@ -46,30 +46,32 @@ public class UserFacadeREST extends AbstractFacade<User> {
 
     @EJB
     private InstrumentFacadeREST ifr;
+
     public UserFacadeREST() {
         super(User.class);
     }
 
-    public static String encodeSHA256(String password) 
-			throws UnsupportedEncodingException, NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
-		md.update(password.getBytes("UTF-8"));
+    public static String encodeSHA256(String password)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(password.getBytes("UTF-8"));
         byte[] digest = md.digest();
         return DatatypeConverter.printBase64Binary(digest).toString();
     }
+
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @RolesAllowed("admin")
     public void create(User user) {
-   
-		User_Group group = new User_Group();
-		group.setLogin(user.getLogin());
-		group.setGroupname(User_Group.USERS_GROUP);
-		em.persist(user);
-		em.persist(group);
+
+        User_Group group = new User_Group();
+        group.setLogin(user.getLogin());
+        group.setGroupname(User_Group.USERS_GROUP);
+        em.persist(user);
+        em.persist(group);
     }
-    
+
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -82,128 +84,111 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{id}")
     @RolesAllowed("admin")
     public void remove(@PathParam("id") String id) {
-         User_Group g = (User_Group)em.createQuery(
-        "SELECT g FROM User_Group g WHERE g.login = :userId")
-        .setParameter("userId", id).getSingleResult();
-         em.remove(g);
-        
+        User_Group g = (User_Group) em.createQuery(
+                "SELECT g FROM User_Group g WHERE g.login = :userId")
+                .setParameter("userId", id).getSingleResult();
+        em.remove(g);
+
         super.remove(super.find(id));
     }
 
-    
     @GET
     @Path("createAdmin")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void createAdmin() {
-         List<Long> result = em.createQuery(
-        "SELECT COUNT(g) FROM User_Group g WHERE g.groupname = 'admin' GROUP BY g.groupname")        
-        .getResultList();
-         
-         if(result.size() > 0){         
-             System.out.println("Admin alredy exists!!");
-             return;
-         }
+        List<Long> result = em.createQuery(
+                "SELECT COUNT(g) FROM User_Group g WHERE g.groupname = 'admin' GROUP BY g.groupname")
+                .getResultList();
+
+        if (result.size() > 0) {
+            System.out.println("Admin alredy exists!!");
+            return;
+        }
         User user = new backend.User();
         user.setName("admin");
         user.setLogin("newAdmin@email.com");
         user.setPassword("hesloadmin");
-        
-          /*try {
-			user.setPassword(encodeSHA256(user.getPassword()));
-                        
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-		}*/
-		User_Group group = new User_Group();
-		group.setLogin(user.getLogin());
-		group.setGroupname(User_Group.ADMINS_GROUP);
-		em.persist(user);
-		em.persist(group);
+
+        User_Group group = new User_Group();
+        group.setLogin(user.getLogin());
+        group.setGroupname(User_Group.ADMINS_GROUP);
+        em.persist(user);
+        em.persist(group);
     }
-    
+
     @GET
     @Path("grantAdmin/{id}")
+    @RolesAllowed("admin")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    
+
     public void grantAdmin(@PathParam("id") String id) {
-        User user = find(id);        
+        User user = find(id);
         Instruments instruments = ifr.findAllInstruments();
         Set<Instrument> instr = new HashSet();
         instr.addAll(instruments.getInstruments());
         user.setInstruments(instr);
-        
-        User_Group g = (User_Group)em.createQuery(
-        "SELECT g FROM User_Group g WHERE g.login = :userId")
-        .setParameter("userId", id).getSingleResult();        
-	
-		
-		g.setGroupname(User_Group.ADMINS_GROUP);		
-		em.persist(g);
-                em.persist(user);
+
+        User_Group g = (User_Group) em.createQuery(
+                "SELECT g FROM User_Group g WHERE g.login = :userId")
+                .setParameter("userId", id).getSingleResult();
+
+        g.setGroupname(User_Group.ADMINS_GROUP);
+        em.persist(g);
+        em.persist(user);
     }
-    
+
     @GET
     @Path("createUser")
+    @RolesAllowed("admin")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void createUser() {
         User user = new User();
         user.setName("user");
         user.setLogin("novyUser@email.com");
         user.setPassword("heslouser");
-        
-          try {
-			user.setPassword(encodeSHA256(user.getPassword()));
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-		}
-		User_Group group = new User_Group();
-		group.setLogin(user.getLogin());
-		group.setGroupname(User_Group.USERS_GROUP);
-		em.persist(user);
-		em.persist(group);
+
+        User_Group group = new User_Group();
+        group.setLogin(user.getLogin());
+        group.setGroupname(User_Group.USERS_GROUP);
+        em.persist(user);
+        em.persist(group);
     }
+
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    
+
     public User find(@PathParam("id") String id) {
         return super.find(id);
     }
 
-    /*@GET
-    @Override
+    @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<User> findAll() {
-        return super.findAll();
-    }*/
-    
-    @GET    
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @RolesAllowed("admin")
-    public Users findAllUsers() {        
+    public Users findAllUsers() {
         Users users = new Users();
         users.setUsers(super.findAll());
         System.out.println("bla");
         return users;
     }
-    
 
     @GET
-    @Path("/isAdmin/{id}")    
+    @Path("/isAdmin/{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public BooleanWrapper isAdmin(@PathParam("id") String id) {
         BooleanWrapper wrapper = new BooleanWrapper();
-         List<String> result = em.createQuery(
-        "SELECT g.groupname FROM User_Group g WHERE g.login = :userId")
-        .setParameter("userId", id)
-        .getResultList();
-        if(result.contains(User_Group.ADMINS_GROUP)) wrapper.setValue(true);
-        else wrapper.setValue(false);
-        
+        List<String> result = em.createQuery(
+                "SELECT g.groupname FROM User_Group g WHERE g.login = :userId")
+                .setParameter("userId", id)
+                .getResultList();
+        if (result.contains(User_Group.ADMINS_GROUP)) {
+            wrapper.setValue(true);
+        } else {
+            wrapper.setValue(false);
+        }
+
         return wrapper;
     }
+
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -222,5 +207,5 @@ public class UserFacadeREST extends AbstractFacade<User> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

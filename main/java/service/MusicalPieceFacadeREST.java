@@ -30,7 +30,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Stateless
 @Path("eu.cz.fit.vahalto1.orchestraapplication.musicalpiece")
@@ -43,6 +43,7 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
     private SheetFacadeREST sfr;
     @EJB
     private EventFacadeREST efr;
+
     public MusicalPieceFacadeREST() {
         super(MusicalPiece.class);
     }
@@ -68,17 +69,18 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
         //edit events
         List<Event> allEvents = efr.findAll();
         List<Event> eventsToUpdate = new ArrayList();
-        for(Event e : allEvents){
-            if(e.getPieces().contains(piece))
+        for (Event e : allEvents) {
+            if (e.getPieces().contains(piece)) {
                 eventsToUpdate.add(e);
+            }
         }
-        for(Event e : eventsToUpdate){
+        for (Event e : eventsToUpdate) {
             e.getPieces().remove(piece);
             efr.edit(e);
         }
         //edit sheets
         List<Sheet> sheetsToUpdate = sfr.findByPiece(id).getSheets();
-        for(Sheet s : sheetsToUpdate){
+        for (Sheet s : sheetsToUpdate) {
             s.setPiece(null);
             sfr.edit(s);
         }
@@ -92,13 +94,7 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
     public MusicalPiece find(@PathParam("id") Long id) {
         return super.find(id);
     }
-
-    /*@GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<MusicalPiece> findAll() {
-        return super.findAll();
-    }*/
+    
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public MusicalPieces findAllPieces() {
@@ -113,37 +109,23 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
     public List<MusicalPiece> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
-     //vyhledani podle jmena
+    //vyhledani podle jmena
+
     @GET
     @Path("/byName/{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public MusicalPiece findByName(@PathParam("name") String name) {
-       List<MusicalPiece> result = em.createQuery(
-        "SELECT p FROM MusicalPiece p WHERE p.name = :pieceName")
-        .setParameter("pieceName", name)
-        .getResultList();
-       if(!result.isEmpty()) return result.get(0);
-       else return null;
+        List<MusicalPiece> result = em.createQuery(
+                "SELECT p FROM MusicalPiece p WHERE p.name = :pieceName")
+                .setParameter("pieceName", name)
+                .getResultList();
+        if (!result.isEmpty()) {
+            return result.get(0);
+        } else {
+            return null;
+        }
     }
-    /*@GET
-    @Path("/sheets/{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Sheets getSheets(@PathParam("id") Long id) {
-      Sheets s = sfr.findAllSheets();
-      List<Sheet> res = new ArrayList<Sheet>();
-      
-      for(Sheet sheet : s.getSheets()){    
-          MusicalPiece p = sheet.getPiece();
-          
-          if(p != null){
-              if(Objects.equals(p.getId(), id)) res.add(sheet);
-          }
-      }
-      Sheets resultSheets = new Sheets();
-        System.out.println("resSize: "+res.size());  
-      resultSheets.setSheets(res);
-      return resultSheets;
-    }*/
+
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
@@ -151,10 +133,9 @@ public class MusicalPieceFacadeREST extends AbstractFacade<MusicalPiece> {
         return String.valueOf(super.count());
     }
 
-    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Stateless
 @Path("eu.cz.fit.vahalto1.orchestraapplication.event")
@@ -39,7 +39,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
     @EJB
     private MusicalPieceFacadeREST pieceFacade;
-    
+
     public EventFacadeREST() {
         super(Event.class);
     }
@@ -55,10 +55,9 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Event entity) {
-        
+
         super.edit(entity);
     }
-
 
     @DELETE
     @Path("{id}")
@@ -73,21 +72,15 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         return super.find(id);
     }
 
-    /*@GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Event> findAll() {
-        return super.findAll();
-    }*/
+    
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Events findAllEvents() {
-        
+
         Events events = new Events();
         List<Event> result = em.createQuery(
-        "SELECT e FROM Event e ORDER BY e.eventDate")        
-        .getResultList();
-        //events.setEvents(super.findAll());
+                "SELECT e FROM Event e ORDER BY e.eventDate")
+                .getResultList();        
         events.setEvents(result);
         return events;
     }
@@ -98,31 +91,39 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     public List<Event> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
+
     @GET
     @Path("/byName/{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Event findByName(@PathParam("name") String name) {
-       List<Event> result = em.createQuery(
-        "SELECT e FROM Event e WHERE e.description = :eventName")
-        .setParameter("eventName", name)
-        .getResultList();
-       if(!result.isEmpty()) return result.get(0);
-       else return null;
+        List<Event> result = em.createQuery(
+                "SELECT e FROM Event e WHERE e.description = :eventName")
+                .setParameter("eventName", name)
+                .getResultList();
+        if (!result.isEmpty()) {
+            return result.get(0);
+        } else {
+            return null;
+        }
     }
-   
+
     //Slouzi k nalezeni skladeb, ktere se hraji na udalosti
     @GET
     @Path("/pieces/{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public MusicalPieces getPieces(@PathParam("id") Long id) {
-       Event e = find(id);
-       if(e == null) return null;
-       MusicalPieces mp = new MusicalPieces();
-       List<MusicalPiece> list = new ArrayList<>();
-       Set<MusicalPiece> p = e.getPieces();
-       if(p != null) list.addAll(p);
-       mp.setPieces(list);
-       return mp;       
+        Event e = find(id);
+        if (e == null) {
+            return null;
+        }
+        MusicalPieces mp = new MusicalPieces();
+        List<MusicalPiece> list = new ArrayList<>();
+        Set<MusicalPiece> p = e.getPieces();
+        if (p != null) {
+            list.addAll(p);
+        }
+        mp.setPieces(list);
+        return mp;
     }
 
     @GET
@@ -136,5 +137,5 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Entity
 @XmlRootElement
@@ -33,8 +33,8 @@ public class MusicalPiece implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-       
-    @OneToMany(mappedBy = "piece")  
+
+    @OneToMany(mappedBy = "piece")
     private Set<Sheet> sheets;
 
     @XmlTransient
@@ -86,5 +86,5 @@ public class MusicalPiece implements Serializable {
     public String toString() {
         return "eu.cz.fit.vahalto1.orchestrasheetapplication.MusicalPiece[ id=" + id + " ]";
     }
-    
+
 }

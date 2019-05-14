@@ -13,26 +13,30 @@ import java.io.OutputStream;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 public class FileUploadReceiver implements Upload.Receiver, Upload.SucceededListener {
-   private static final long serialVersionUID = 112358132134L;
+
+    private static final long serialVersionUID = 112358132134L;
     private String data;
     private String fileName;
     private String mType;
-    private ByteArrayOutputStream baos = new ByteArrayOutputStream();    
+    private ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private Label label;
-    public FileUploadReceiver(Label l){
+
+    public FileUploadReceiver(Label l) {
         label = l;
     }
-    
-    public String getFileName(){
+
+    public String getFileName() {
         return fileName;
     }
-    public String getData(){
+
+    public String getData() {
         return data;
     }
-    public ByteArrayOutputStream getStream(){
+
+    public ByteArrayOutputStream getStream() {
         return baos;
     }
 
@@ -40,26 +44,21 @@ public class FileUploadReceiver implements Upload.Receiver, Upload.SucceededList
     public OutputStream receiveUpload(String filename, String mimeType) {
         this.fileName = filename;
         baos.reset();
-        return baos;
-
-        //return null;
+        return baos;        
     }
 
-    void reset(){
-       baos.reset();
+    void reset() {
+        baos.reset();
         data = null;
     }
-   
 
     @Override
     public void uploadSucceeded(Upload.SucceededEvent event) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         data = baos.toString();
-       label.setCaption(fileName);
-       // System.out.println(data);
-       Notification.show("Uploaded successfully",
-                  "",
-                  Notification.Type.HUMANIZED_MESSAGE);
-                
+        label.setCaption(fileName);        
+        Notification.show("Uploaded successfully",
+                "",
+                Notification.Type.HUMANIZED_MESSAGE);
+
     }
 }

@@ -21,14 +21,13 @@ import javax.ws.rs.client.WebTarget;
  *        client.close();
  * </pre>
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 public class UserClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static String BASE_URI;// = "http://localhost:8080/OrchestraApplication/webresources";
-    //private static final String BASE_URI = "http://185.88.73.72:8080/Orchestra";
+    private static String BASE_URI;
     
     private String session;
 

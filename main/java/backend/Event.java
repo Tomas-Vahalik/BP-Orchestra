@@ -10,20 +10,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Entity
 @XmlRootElement
@@ -33,6 +31,20 @@ public class Event implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    private String name;
+    private String description;
+    private Date eventDate;
+
+    @ManyToMany()
+    @JoinTable(
+            name = "Event_Piece",
+            joinColumns = {
+                @JoinColumn(name = "event_id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "piece_id")}
+    )
+    Set<MusicalPiece> pieces = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -60,9 +72,10 @@ public class Event implements Serializable {
     public Date getEventDate() {
         return eventDate;
     }
-    public String getFormatedDate(){
+
+    public String getFormatedDate() {
         SimpleDateFormat format = new SimpleDateFormat("d.MM.YYYY");
-        return format.format(eventDate);        
+        return format.format(eventDate);
     }
 
     public void setEventDate(Date eventDate) {
@@ -77,21 +90,6 @@ public class Event implements Serializable {
         this.name = name;
     }
     
-    
-    private String name;        
-    private String description;
-    
-    private Date eventDate;
-    
-    @ManyToMany()
-    @JoinTable(
-        name = "Event_Piece", 
-        joinColumns = { @JoinColumn(name = "event_id") }, 
-        inverseJoinColumns = { @JoinColumn(name = "piece_id") }
-    )
-    Set<MusicalPiece> pieces = new HashSet<>();
-
-    //@XmlTransient
     public Set<MusicalPiece> getPieces() {
         return pieces;
     }
@@ -99,10 +97,10 @@ public class Event implements Serializable {
     public void setPieces(Set<MusicalPiece> pieces) {
         this.pieces = pieces;
     }
-    
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        
         if (!(object instanceof Event)) {
             return false;
         }
@@ -117,5 +115,5 @@ public class Event implements Serializable {
     public String toString() {
         return "eu.cz.fit.vahalto1.orchestrasheetapplication.Event[ id=" + id + " ]";
     }
-    
+
 }

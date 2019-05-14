@@ -11,10 +11,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @XmlRootElement
 public class Events {
+
     private List<Event> events = new ArrayList<>();
 
     public List<Event> getEvents() {
@@ -24,6 +25,5 @@ public class Events {
     public void setEvents(List<Event> events) {
         this.events = events;
     }
-    
-}
 
+}

@@ -22,18 +22,17 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
  *        client.close();
  * </pre>
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 public class EventClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static String BASE_URI;// = "http://localhost:8080/OrchestraApplication/webresources";
-    //private static final String BASE_URI = "http://185.88.73.72:8080/Orchestra";
+    private static String BASE_URI;
 
     public EventClient(String baseURI) {
         BASE_URI = baseURI;
-        client = javax.ws.rs.client.ClientBuilder.newClient();        
+        client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("webresources/eu.cz.fit.vahalto1.orchestraapplication.event");
     }
 
@@ -93,7 +92,7 @@ public class EventClient {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
-       
+
     public <T> T findAllEvents_XML(Class<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -102,19 +101,21 @@ public class EventClient {
     public void remove(String id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
+
     public <T> T getPieces(Class<T> responseType, Event e) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("/pieces/" + e.getId());
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-    
+
     public <T> T findByName_XML(Class<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("byName/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
+
     public void close() {
         client.close();
     }
-    
+
 }

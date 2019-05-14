@@ -12,7 +12,7 @@ import javax.persistence.Id;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Entity
 public class User_Group implements Serializable {

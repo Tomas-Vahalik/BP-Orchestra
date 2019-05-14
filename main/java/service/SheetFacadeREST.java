@@ -12,12 +12,8 @@ import backend.PdfWrapper;
 import backend.Sheet;
 import backend.Sheets;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -35,12 +31,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Stateless
 @Path("eu.cz.fit.vahalto1.orchestraapplication.sheet")
@@ -48,7 +43,7 @@ public class SheetFacadeREST extends AbstractFacade<Sheet> {
 
     @PersistenceContext(unitName = "OrchestraAppPersistence")
     private EntityManager em;
-    
+
     @EJB
     private MusicalPieceFacadeREST pfr;
     @EJB
@@ -80,11 +75,10 @@ public class SheetFacadeREST extends AbstractFacade<Sheet> {
         super.remove(super.find(id));
     }
 
-    
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Sheet find(@PathParam("id") Long id) {        
+    public Sheet find(@PathParam("id") Long id) {
         return super.find(id);
     }
 
@@ -96,116 +90,103 @@ public class SheetFacadeREST extends AbstractFacade<Sheet> {
         return s;
     }
 
-   @GET   
-@Path("/{id}/pdf")
-//@RolesAllowed("admin")
-@Produces("application/pdf")
-public Response getPdf(@PathParam("id") Long id, @Context HttpHeaders hh) throws Exception
-{
-    MultivaluedMap<String, String> headerParams = hh.getRequestHeaders();
-    for (Map.Entry<String, List<String>> entry : headerParams.entrySet()) {
-        String key = entry.getKey();
-        List<String> value = entry.getValue();
-        System.out.println(key + ":"+value);
-        
-    }
-        //String nameParam = queryParams.getFirst("user");
-         Sheet sheet = find(id);
-        byte [] result = (byte [])em.createQuery(
-        "SELECT s.pdfFile FROM Sheet s WHERE s.id = :id")
-        .setParameter("id", id)
-        .getSingleResult();
-        
-        
-       /*File f = new File("tmpFile.pdf");
-       FileOutputStream fos = new FileOutputStream(f);
-       fos.write(sheet.getPdfFile());*/
-       
-   
-    //ByteArrayInputStream is = new ByteArrayInputStream(sheet.getPdfFile());    
-    ByteArrayInputStream is = new ByteArrayInputStream(result);    
-    Response.ResponseBuilder responseBuilder = javax.ws.rs.core.Response.ok((Object) is);
-    responseBuilder.type("application/pdf");
-    responseBuilder.header("Content-Disposition", "filename=test.pdf");
-    return responseBuilder.build();
-}
+    @GET
+    @Path("/{id}/pdf")
+    @Produces("application/pdf")
+    public Response getPdf(@PathParam("id") Long id, @Context HttpHeaders hh) throws Exception {
 
-@Path("/setPdf/{id}")
+        byte[] result = (byte[]) em.createQuery(
+                "SELECT s.pdfFile FROM Sheet s WHERE s.id = :id")
+                .setParameter("id", id)
+                .getSingleResult();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(result);
+        Response.ResponseBuilder responseBuilder = javax.ws.rs.core.Response.ok((Object) is);
+        responseBuilder.type("application/pdf");
+        responseBuilder.header("Content-Disposition", "filename=test.pdf");
+        return responseBuilder.build();
+    }
+
+    @Path("/setPdf/{id}")
     @POST
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})    
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void setPdf(@PathParam("id") Long id, PdfWrapper wrapper) {
         Sheet sheet = super.find(id);
         sheet.setPdfFile(wrapper.getPdfFile());
-        super.edit(sheet);      
+        super.edit(sheet);
     }
-    
-@GET
+
+    @GET
     @Path("/byName/{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Sheet findByName(@PathParam("name") String name) {
-       List<Sheet> result = em.createQuery(
-        "SELECT s FROM Sheet s WHERE s.name = :sheetName")
-        .setParameter("sheetName", name)
-        .getResultList();
-       /*Sheets s = new Sheets();
-        s.setSheets(super.findAll());*/
-       if(!result.isEmpty()) return result.get(0);
-       else return null;
+        List<Sheet> result = em.createQuery(
+                "SELECT s FROM Sheet s WHERE s.name = :sheetName")
+                .setParameter("sheetName", name)
+                .getResultList();
+
+        if (!result.isEmpty()) {
+            return result.get(0);
+        } else {
+            return null;
+        }
     }
-        
-@GET
+
+    @GET
     @Path("/byPiece/{piece}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Sheets findByPiece(@PathParam("piece") Long piece_id) {
-       MusicalPiece p = pfr.find(piece_id);
-       Sheets s = new Sheets();
-       List<Sheet> result = em.createQuery(
-        "SELECT s FROM Sheet s WHERE s.piece = :piece")
-        .setParameter("piece", p)
-        .getResultList();
-       s.setSheets(result);
-       return s;
+        MusicalPiece p = pfr.find(piece_id);
+        Sheets s = new Sheets();
+        List<Sheet> result = em.createQuery(
+                "SELECT s FROM Sheet s WHERE s.piece = :piece")
+                .setParameter("piece", p)
+                .getResultList();
+        s.setSheets(result);
+        return s;
     }
+
     @GET
     @Path("/byInstrument/{instrument}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Sheets findByInstrument(@PathParam("instrument") Long instrument_id) {
-        
-       Instrument i = ifr.find(instrument_id);
-       
-       Sheets s = new Sheets();
-       List<Sheet> result = em.createQuery(
-        "SELECT s FROM Sheet s WHERE s.instrument = :instrument")
-        .setParameter("instrument", i)
-        .getResultList();
-       s.setSheets(result);
-       
-       return s;
+
+        Instrument i = ifr.find(instrument_id);
+
+        Sheets s = new Sheets();
+        List<Sheet> result = em.createQuery(
+                "SELECT s FROM Sheet s WHERE s.instrument = :instrument")
+                .setParameter("instrument", i)
+                .getResultList();
+        s.setSheets(result);
+
+        return s;
     }
-    
+
     @GET
     @Path("/byEvent/{event}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Sheets findByEvent(@PathParam("event") Long event_id) {
-       Event e = efr.find(event_id);
-       Set<MusicalPiece> p = e.getPieces();
-       Set<Long> l = new HashSet();
-       for(MusicalPiece piece : p){
-           l.add(piece.getId());
-       }
-       
-       Sheets s = new Sheets();
-       if(p.size() == 0){
-           return s;
-       }
-       List<Sheet> result = em.createQuery(
-        "SELECT s FROM Sheet s WHERE s.piece IN :pieces")
-        .setParameter("pieces", p)        
-        .getResultList();
-       s.setSheets(result);
-        
-       return s;
+        Event e = efr.find(event_id);
+        Set<MusicalPiece> p = e.getPieces();
+        Set<Long> l = new HashSet();
+        for (MusicalPiece piece : p) {
+            l.add(piece.getId());
+        }
+
+        Sheets s = new Sheets();
+        if (p.size() == 0) {
+            return s;
+        }
+        List<Sheet> result = em.createQuery(
+                "SELECT s FROM Sheet s WHERE s.piece IN :pieces")
+                .setParameter("pieces", p)
+                .getResultList();
+        s.setSheets(result);
+
+        return s;
     }
+
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -225,5 +206,5 @@ public Response getPdf(@PathParam("id") Long id, @Context HttpHeaders hh) throws
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

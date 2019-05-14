@@ -1,22 +1,8 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
+
 /* 
     Created on : 26.1.2019, 20:13:30
-    Author     : HP
+    Author     : Tomáš Vahalík
 */
-
-body{
-    /*background: url("https://image.freepik.com/free-vector/music-notes-round-scales-frame_1308-9230.jpg");*/
-    /*background-image: url("BP_Background.jpg");
-    background-size: 100%;
-    background-repeat: no-repeat;
-    background-position: 20%;*/
-    
-}
-
 
 .header{
     width:100%;
@@ -55,23 +41,12 @@ body{
 	border-top-color: #c5c5c5;
 	border-bottom-color: #bcbcbc;
 }
-.login{
-    /*margin-top: 5%;    
-    margin-left:27%;
-    background-color: rgba(0, 0, 0, 0.6);
-    transform:scale(0.6,0.6);
-    position:relative;
-    font-size: 1.3em;
-    
-    
-    */
+.login{    
     padding-top: 5%;
     padding-left:40px;
     width:200px;
     float:left;
-    text-align: center;   
-    /*margin-top:30%;*/
-     
+    text-align: center;       
 }
 .obrazek{
     margin-left:300px;        
@@ -87,7 +62,7 @@ form{
     margin-left: auto;
     margin-right: auto;
     text-align:left;
-    /*color:white;*/
+    
 }
 
 .fit{
@@ -110,7 +85,7 @@ form{
     color:white;
     
 }
-.bla {
+.register {
      position: relative;
 	text-align: center;
 	white-space: nowrap;

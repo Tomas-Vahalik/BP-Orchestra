@@ -22,20 +22,15 @@ import javax.ws.rs.client.WebTarget;
  *        client.close();
  * </pre>
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 public class SheetClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static String BASE_URI;// = "http://localhost:8080/OrchestraApplication/webresources";
-    //private static final String BASE_URI = "http://185.88.73.72:8080/Orchestra";
+    private static String BASE_URI;
     private String sessionid;
-    public SheetClient(String id, String baseURI) {
-        /*HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("admin@email.com", "hesloadmin");        
-
-        ClientConfig clientConfig = new ClientConfig();
-        clientConfig.register(feature) ;*/
+    public SheetClient(String id, String baseURI) {        
         BASE_URI = baseURI;
         sessionid=id;
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -51,8 +46,7 @@ public class SheetClient {
     public <T> T getPdf(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;        
         String toPath = id + "/pdf";
-        resource = resource.path(toPath);  
-        //resource = resource.path(java.text.MessageFormat.format("{0}/pdf", new Object[]{id}));
+        resource = resource.path(toPath);          
         Invocation.Builder ib = resource.request("application/pdf");
         return ib.cookie("JSESSIONID", sessionid).get(responseType);
     }

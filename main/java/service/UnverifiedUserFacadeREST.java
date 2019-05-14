@@ -24,7 +24,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Stateless
 @Path("eu.cz.fit.vahalto1.orchestraapplication.unverifieduser")
@@ -60,19 +60,19 @@ public class UnverifiedUserFacadeREST extends AbstractFacade<UnverifiedUser> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public UnverifiedUser find(@PathParam("id") String id) {        
+    public UnverifiedUser find(@PathParam("id") String id) {
         return super.find(id);
     }
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public UnverifiedPeople findAllPeople() {
-        
-       UnverifiedPeople uu = new UnverifiedPeople();              
-       
-       uu.setUsers(super.findAll());       
-        
-       return uu;
+
+        UnverifiedPeople uu = new UnverifiedPeople();
+
+        uu.setUsers(super.findAll());
+
+        return uu;
     }
 
     @GET
@@ -93,5 +93,5 @@ public class UnverifiedUserFacadeREST extends AbstractFacade<UnverifiedUser> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

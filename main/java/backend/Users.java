@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @XmlRootElement
 public class Users {

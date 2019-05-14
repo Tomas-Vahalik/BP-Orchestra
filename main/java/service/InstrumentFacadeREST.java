@@ -23,7 +23,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Stateless
 @Path("eu.cz.fit.vahalto1.orchestraapplication.instrument")
@@ -63,7 +63,7 @@ public class InstrumentFacadeREST extends AbstractFacade<Instrument> {
         return super.find(id);
     }
 
-    @GET    
+    @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Instruments findAllInstruments() {
         Instruments i = new Instruments();
@@ -71,7 +71,6 @@ public class InstrumentFacadeREST extends AbstractFacade<Instrument> {
         return i;
     }
 
-    
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -79,17 +78,21 @@ public class InstrumentFacadeREST extends AbstractFacade<Instrument> {
         return super.findRange(new int[]{from, to});
     }
 
-     @GET
+    @GET
     @Path("/byName/{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Instrument findByName(@PathParam("name") String name) {
-       List<Instrument> result = em.createQuery(
-        "SELECT i FROM Instrument i WHERE i.name = :instrumentName")
-        .setParameter("instrumentName", name)
-        .getResultList();
-       if(!result.isEmpty()) return result.get(0);
-       else return null;
+        List<Instrument> result = em.createQuery(
+                "SELECT i FROM Instrument i WHERE i.name = :instrumentName")
+                .setParameter("instrumentName", name)
+                .getResultList();
+        if (!result.isEmpty()) {
+            return result.get(0);
+        } else {
+            return null;
+        }
     }
+
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
@@ -101,5 +104,5 @@ public class InstrumentFacadeREST extends AbstractFacade<Instrument> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

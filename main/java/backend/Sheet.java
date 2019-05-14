@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Entity
 @XmlRootElement
@@ -29,13 +29,13 @@ public class Sheet implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     @Lob
-    @Column(columnDefinition="BLOB")
-    private byte[] pdfFile;    
-    
+    @Column(columnDefinition = "BLOB")
+    private byte[] pdfFile;
+
     private String name;
-    
+
     @ManyToOne
     @JoinColumn(name = "piece")
     private MusicalPiece piece;
@@ -47,12 +47,12 @@ public class Sheet implements Serializable {
     public void setPiece(MusicalPiece piece) {
         this.piece = piece;
     }
-    
+
     @ManyToOne
     @JoinColumn(name = "instrument")
     private Instrument instrument;
 
-    //@XmlJavaTypeAdapter(BlobXmlAdapter.class)
+    
     @XmlTransient
     public byte[] getPdfFile() {
         return pdfFile;
@@ -77,7 +77,7 @@ public class Sheet implements Serializable {
     public void setInstrument(Instrument instrument) {
         this.instrument = instrument;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -110,5 +110,5 @@ public class Sheet implements Serializable {
     public String toString() {
         return "eu.cz.fit.vahalto1.orchestrasheetapplication.Sheet[ id=" + id + " ]";
     }
-    
+
 }

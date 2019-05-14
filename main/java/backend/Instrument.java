@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author HP
+ * @author Tomáš Vahalík
  */
 @Entity
 @XmlRootElement
@@ -40,6 +40,7 @@ public class Instrument implements Serializable {
     public void setSheets(Set<Sheet> sheets) {
         this.sheets = sheets;
     }
+
     public String getName() {
         return name;
     }
@@ -80,5 +81,5 @@ public class Instrument implements Serializable {
     public String toString() {
         return "eu.cz.fit.vahalto1.orchestrasheetapplication.Instrument[ id=" + id + " ]";
     }
-    
+
 }
